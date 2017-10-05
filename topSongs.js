@@ -1,4 +1,6 @@
 var mysql = require("mysql");
+var Table = require("cli-table");
+
 var config = require("./sqlConfig.js");
 var connection = mysql.createConnection({
 	host: config.host,
@@ -6,6 +8,19 @@ var connection = mysql.createConnection({
 	password: config.password,
 	database: config.database
 });
+
+var printTable = function(data) {
+	var table = new Table({
+		head: ["Position", "Artist", "Song", "Year"],
+		colWidths: [10, 50, 50, 6]
+	});
+
+	data.forEach(function(row) {
+		table.push([row.position, row.artist, row.song, row.year]);
+	});
+
+	console.log(table.toString());
+};
 
 connection.connect();
 
@@ -19,9 +34,9 @@ var queryByArtist = function(artistName) {
 		if(err) {
 			throw err;
 		}
-		console.log("results", results);
-		console.log("how many " + artistName + "?", results.length);
-		console.log("fields", fields.length);
+		printTable(results);
+
+		console.log("Total Results: ", results.length);
 
 		connection.end();
 	});
