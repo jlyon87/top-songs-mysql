@@ -31,8 +31,44 @@ var printResultsTable = function(data) {
 	});
 
 	console.log(table.toString());
+	console.log("Total Results: ", data.length);
 };
 
+var printAggregateTable = function(data) {
+	var table = new Table({
+		head: ["Artist", "Hits"],
+		colWidths: [50, 6]
+	});
+
+	data.forEach(function(row) {
+		table.push([row.artist, row.hitCount]);
+	});
+
+	console.log(table.toString());
+	console.log("Total Results: ", data.length);
+};
+
+var queryHandler = function(err, results, fields) {
+	if(err) {
+		exit("Error during query.");
+		throw err;
+	}
+	printResultsTable(results);
+	connection.end();
+};
+
+var aggregateHandler = function(err, results, fields) {
+	if(err) {
+		exit("Error during query.");
+		throw err;
+	}
+	printAggregateTable(results);
+	connection.end();
+};
+
+/*
+	enter artist name after command
+*/
 var queryByArtist = function() {
 	var artistName = process.argv.slice(3).join(" ");
 
@@ -40,35 +76,40 @@ var queryByArtist = function() {
 		exit("Please enter an artist name.");
 		return;
 	}
-
 	var wildcardArtist = "%" + artistName + "%";
+
 	connection.query({
 		sql: selectFrom + "WHERE `artist` LIKE ? ORDER BY `year` DESC",
 		timeout: 40000,
 		values: [wildcardArtist],
-	}, function(err, results, fields) {
-		if(err) {
-			exit("Error querying by Artist.");
-			throw err;
-		}
-		printResultsTable(results);
-
-		console.log("Total Results: ", results.length);
-
-		connection.end();
-	});
+	}, queryHandler);
 };
 
-var commands = {
-	byArtist: queryByArtist
+var queryTopTen = function() {
+	connection.query({
+		sql: selectFrom + "WHERE `position` < 11 ORDER BY `position` ASC",
+		timeout: 40000
+	}, queryHandler);
+};
+
+var queryMostPopular = function() {
+	connection.query({
+		sql: "SELECT COUNT(position) hitCount, artist FROM `top5000` GROUP BY `artist` HAVING COUNT(`position`) > 9 ORDER BY hitCount DESC LIMIT 10",
+		timeout: 40000
+	}, aggregateHandler);
 };
 
 /*
-	node argv accepts any number of strings past the .js filename as the artist.
-	usage: node topSongs.js song name
+	available commands
 */
+var commands = {
+	byArtist: queryByArtist,
+	topTen: queryTopTen,
+	popular: queryMostPopular
+};
+
 var command = process.argv[2];
-if(!command) {
+if(!command || !commands[command]) {
 	exit("Please enter a valid command.");
 	return;
 }
