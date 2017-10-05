@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 var Table = require("cli-table");
 
-var config = require("./sqlConfig.js");
+var config = require("./sqlSchema/sqlConfig.js");
 var connection = mysql.createConnection({
 	host: config.host,
 	user: config.user,
