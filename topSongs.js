@@ -42,5 +42,10 @@ var queryByArtist = function(artistName) {
 	});
 };
 
+
+/*
+	node argv accepts any number of strings past the .js filename as the artist.
+	usage: node topSongs.js song name
+*/
 var artistName = process.argv.slice(2).join(" ");
 queryByArtist(artistName);
