@@ -11,7 +11,7 @@ This is a CLI only node project. Commands are entered in the CLI to perform quer
  2. npm init
  3. npm install
  4. Create Database from [sqlSchema/schema.sql](sqlSchema/schema.sql)
-  * [mysql workbench](https://www.mysql.com/products/workbench/) recommended
+    * [mysql workbench](https://www.mysql.com/products/workbench/) recommended
  5. Import data to top5000 from [sqlSchema/TopSongs.csv](sqlSchema/TopSongs.csv)
  6. Set connection config in topSongs.js with your database credentials
 
