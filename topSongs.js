@@ -15,14 +15,14 @@ var queryByArtist = function(artist) {
 		timeout: 40000,
 		values: [artist],
 	}, function(err, results, fields) {
-			if(err) {
-				throw err;
-			}
-			console.log("results", results);
-			console.log("how many " + artistName + "?", results.length);
-			console.log("fields", fields.length);
+		if(err) {
+			throw err;
+		}
+		console.log("results", results);
+		console.log("how many " + artistName + "?", results.length);
+		console.log("fields", fields.length);
 
-			connection.end();
+		connection.end();
 	});
 };
 
