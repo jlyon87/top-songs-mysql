@@ -9,7 +9,18 @@ var connection = mysql.createConnection({
 	database: config.database
 });
 
-var printTable = function(data) {
+var selectFrom = "SELECT position, artist, song, year FROM `top5000`";
+
+connection.connect();
+
+var exit = function(message) {
+	if(message) {
+		console.log(message);
+	}
+	connection.end();
+};
+
+var printResultsTable = function(data) {
 	var table = new Table({
 		head: ["Position", "Artist", "Song", "Year"],
 		colWidths: [10, 50, 50, 6]
@@ -22,19 +33,25 @@ var printTable = function(data) {
 	console.log(table.toString());
 };
 
-connection.connect();
+var queryByArtist = function() {
+	var artistName = process.argv.slice(3).join(" ");
 
-var queryByArtist = function(artistName) {
+	if(!artistName || typeof artistName !== "string") {
+		exit("Please enter an artist name.");
+		return;
+	}
+
 	var wildcardArtist = "%" + artistName + "%";
 	connection.query({
-		sql: "SELECT position, artist, song, year FROM `top5000` WHERE `artist` LIKE ? ORDER BY `year` DESC",
+		sql: selectFrom + "WHERE `artist` LIKE ? ORDER BY `year` DESC",
 		timeout: 40000,
 		values: [wildcardArtist],
 	}, function(err, results, fields) {
 		if(err) {
+			exit("Error querying by Artist.");
 			throw err;
 		}
-		printTable(results);
+		printResultsTable(results);
 
 		console.log("Total Results: ", results.length);
 
@@ -42,9 +59,17 @@ var queryByArtist = function(artistName) {
 	});
 };
 
+var commands = {
+	byArtist: queryByArtist
+};
+
 /*
 	node argv accepts any number of strings past the .js filename as the artist.
 	usage: node topSongs.js song name
 */
-var artistName = process.argv.slice(2).join(" ");
-queryByArtist(artistName);
+var command = process.argv[2];
+if(!command) {
+	exit("Please enter a valid command.");
+	return;
+}
+commands[command]();
