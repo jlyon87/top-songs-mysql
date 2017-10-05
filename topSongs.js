@@ -9,11 +9,12 @@ var connection = mysql.createConnection({
 
 connection.connect();
 
-var queryByArtist = function(artist) {
+var queryByArtist = function(artistName) {
+	var wildcardArtist = "%" + artistName + "%";
 	connection.query({
-		sql: "SELECT position, artist, song, year FROM `top5000` WHERE `artist` = ? ORDER BY `year` DESC",
+		sql: "SELECT position, artist, song, year FROM `top5000` WHERE `artist` LIKE ? ORDER BY `year` DESC",
 		timeout: 40000,
-		values: [artist],
+		values: [wildcardArtist],
 	}, function(err, results, fields) {
 		if(err) {
 			throw err;
