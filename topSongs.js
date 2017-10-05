@@ -67,6 +67,7 @@ var aggregateHandler = function(err, results, fields) {
 };
 
 /*
+	Query songs by artist
 	enter artist name after command
 */
 var queryByArtist = function() {
@@ -85,6 +86,9 @@ var queryByArtist = function() {
 	}, queryHandler);
 };
 
+/*
+	Query Top Ten Songs
+*/
 var queryTopTen = function() {
 	connection.query({
 		sql: selectFrom + "ORDER BY `position` ASC LIMIT 10",
@@ -92,6 +96,9 @@ var queryTopTen = function() {
 	}, queryHandler);
 };
 
+/*
+	Query Top Ten contributing Artists by Number of Songs
+*/
 var queryMostPopular = function() {
 	connection.query({
 		sql: "SELECT COUNT(position) hitCount, artist FROM `top5000` GROUP BY `artist` HAVING COUNT(`position`) > 9 ORDER BY hitCount DESC LIMIT 10",
