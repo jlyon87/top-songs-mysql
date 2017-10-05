@@ -87,7 +87,7 @@ var queryByArtist = function() {
 
 var queryTopTen = function() {
 	connection.query({
-		sql: selectFrom + "WHERE `position` < 11 ORDER BY `position` ASC",
+		sql: selectFrom + "ORDER BY `position` ASC LIMIT 10",
 		timeout: 40000
 	}, queryHandler);
 };
